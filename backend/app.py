@@ -262,6 +262,20 @@ def register_routes(app):
             }
         )
 
+    @app.get("/api/contact")
+    def contact():
+        return jsonify(
+            {
+                "company": "Annamalayaar Trade Centre Pvt. Ltd.",
+                "contact_person": "A.S. Mohan Kanthan",
+                "designation": "Managing Director",
+                "phones": ["97418 22408", "98948 72151"],
+                "email": "annamalatradecentrepvtltd25@gmail.com",
+                "address": "No. 11, Salem - Chennai NH Road, Chinna Salem, Kallakuruchi Dt - 606201, Tamil Nadu, India.",
+                "card_image": "/assets/contact-card.jpg",
+            }
+        )
+
     @app.post("/api/register")
     def register():
         data = request.get_json(silent=True) or {}

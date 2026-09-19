@@ -7,6 +7,7 @@ const links = [
   { to: "/legacy", label: "Our Legacy" },
   { to: "/products", label: "Product Catalogue" },
   { to: "/expo", label: "Annamalaiyar Expo" },
+  { to: "/contact", label: "Contact" },
 ];
 
 export default function Navbar() {

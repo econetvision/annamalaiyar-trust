@@ -26,6 +26,7 @@ export const api = {
   advertisements: () => fetch(`${BASE}/advertisements`).then(handle),
   expo: () => fetch(`${BASE}/expo`).then(handle),
   legacy: () => fetch(`${BASE}/legacy`).then(handle),
+  contact: () => fetch(`${BASE}/contact`).then(handle),
   register: (payload) =>
     fetch(`${BASE}/register`, {
       method: "POST",

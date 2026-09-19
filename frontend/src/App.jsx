@@ -7,6 +7,7 @@ import Verify from "./pages/Verify.jsx";
 import Legacy from "./pages/Legacy.jsx";
 import Products from "./pages/Products.jsx";
 import Expo from "./pages/Expo.jsx";
+import Contact from "./pages/Contact.jsx";
 import Admin from "./pages/Admin.jsx";
 
 export default function App() {
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="/legacy" element={<Legacy />} />
           <Route path="/products" element={<Products />} />
           <Route path="/expo" element={<Expo />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/admin" element={<Admin />} />
         </Routes>
       </main>
