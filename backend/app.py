@@ -22,12 +22,17 @@ def create_app():
         "DATABASE_URL", "sqlite:///" + os.path.join(app.instance_path, "atc.db")
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["UPLOAD_FOLDER"] = os.path.join(app.instance_path, "uploads")
+    # On a platform with a mounted persistent volume (e.g. Railway), set
+    # UPLOAD_FOLDER to a path under that volume so uploads survive redeploys.
+    app.config["UPLOAD_FOLDER"] = os.environ.get(
+        "UPLOAD_FOLDER", os.path.join(app.instance_path, "uploads")
+    )
     app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024  # 5 MB per upload
     os.makedirs(app.instance_path, exist_ok=True)
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-    CORS(app)
+    cors_origins = os.environ.get("CORS_ORIGINS")
+    CORS(app, origins=cors_origins.split(",") if cors_origins else "*")
     db.init_app(app)
 
     with app.app_context():

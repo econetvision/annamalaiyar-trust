@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { api } from "../api.js";
+import { api, resolveImageUrl } from "../api.js";
 
 const AUTO_ADVANCE_MS = 5000;
 
@@ -39,7 +39,7 @@ export default function AdSpace() {
             {ads.map((ad) => (
               <Link key={ad.id} to={ad.link || "#"} className="carousel-slide">
                 <span className="ad-tag">AD</span>
-                <img src={ad.image_url} alt={ad.title} />
+                <img src={resolveImageUrl(ad.image_url)} alt={ad.title} />
               </Link>
             ))}
           </div>

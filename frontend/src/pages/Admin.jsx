@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { api } from "../api.js";
+import { api, resolveImageUrl } from "../api.js";
 
 const initialProductForm = { name: "", category: "", weight: "", price: "", description: "" };
 const initialAdForm = { title: "", link: "" };
@@ -354,7 +354,7 @@ export default function Admin() {
             <div className="card product-card" key={p.id}>
               <div className="product-photo-frame">
                 {p.image_url ? (
-                  <img src={p.image_url} alt={p.name} className="product-photo" />
+                  <img src={resolveImageUrl(p.image_url)} alt={p.name} className="product-photo" />
                 ) : (
                   <span className="product-photo-placeholder">No image</span>
                 )}
@@ -412,7 +412,7 @@ export default function Admin() {
           {ads.map((ad) => (
             <div className="card product-card" key={ad.id}>
               <div className="product-photo-frame">
-                <img src={ad.image_url} alt={ad.title} className="product-photo" />
+                <img src={resolveImageUrl(ad.image_url)} alt={ad.title} className="product-photo" />
               </div>
               <div className="card-body">
                 <div style={{ fontWeight: 700 }}>{ad.title}</div>

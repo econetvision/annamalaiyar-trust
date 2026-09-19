@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { api } from "../api.js";
+import { api, resolveImageUrl } from "../api.js";
 import { getAgentCode } from "../auth.js";
 
 export default function Products() {
@@ -52,7 +52,7 @@ export default function Products() {
             <div className="card product-card" key={p.id}>
               <div className="product-photo-frame">
                 {p.image_url ? (
-                  <img src={p.image_url} alt={p.name} className="product-photo" />
+                  <img src={resolveImageUrl(p.image_url)} alt={p.name} className="product-photo" />
                 ) : (
                   <span className="product-photo-placeholder">No image</span>
                 )}
