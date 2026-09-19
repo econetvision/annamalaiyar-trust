@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api, resolveImageUrl } from "../api.js";
 
 const AUTO_ADVANCE_MS = 5000;
 
 export default function AdSpace() {
+  const { t } = useTranslation();
   const [ads, setAds] = useState([]);
   const [index, setIndex] = useState(0);
   const timerRef = useRef(null);
@@ -31,14 +33,14 @@ export default function AdSpace() {
   return (
     <section className="section ad-section">
       <div className="container">
-        <h2 className="section-title">Advertisements</h2>
-        <p className="section-subtitle">Sponsored placements from trust members &amp; affiliates</p>
+        <h2 className="section-title">{t("ads.title")}</h2>
+        <p className="section-subtitle">{t("ads.subtitle")}</p>
 
         <div className="carousel">
           <div className="carousel-track" style={{ transform: `translateX(-${index * 100}%)` }}>
             {ads.map((ad) => (
               <Link key={ad.id} to={ad.link || "#"} className="carousel-slide">
-                <span className="ad-tag">AD</span>
+                <span className="ad-tag">{t("ads.tag")}</span>
                 <img src={resolveImageUrl(ad.image_url)} alt={ad.title} />
               </Link>
             ))}

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../api.js";
 import AdSpace from "../components/AdSpace.jsx";
 
 export default function Home() {
+  const { t } = useTranslation();
   const [services, setServices] = useState([]);
 
   useEffect(() => {
@@ -14,18 +16,15 @@ export default function Home() {
     <>
       <section className="hero">
         <div className="container">
-          <span className="badge-strip">Since 1923 &middot; Annamalaiyar Trust est. 2012</span>
-          <h1>அண்ணாமலையார் டிரஸ்ட்</h1>
-          <p>
-            Serving Chinna Salem and Kallakurichi District with trusted community services, agent-led
-            membership, and family-run enterprises under the Sri Muruga Vilas Group.
-          </p>
+          <span className="badge-strip">{t("home.badge")}</span>
+          <h1>{t("home.title")}</h1>
+          <p>{t("home.subtitle")}</p>
           <div className="hero-cta">
             <Link to="/register" className="btn btn-primary">
-              Become an Agent
+              {t("home.becomeAgent")}
             </Link>
             <Link to="/verify" className="btn btn-outline">
-              Verify Agent Code
+              {t("home.verifyCode")}
             </Link>
           </div>
         </div>
@@ -35,13 +34,13 @@ export default function Home() {
 
       <section className="section">
         <div className="container">
-          <h2 className="section-title">Our Services</h2>
-          <p className="section-subtitle">Everything the trust and its affiliate businesses offer, in one place</p>
+          <h2 className="section-title">{t("home.servicesTitle")}</h2>
+          <p className="section-subtitle">{t("home.servicesSubtitle")}</p>
           <div className="services-grid">
             {services.map((s) => (
               <div className="service-card" key={s.id}>
                 <span className="service-icon">{s.icon}</span>
-                <span className="service-name">{s.name}</span>
+                <span className="service-name">{t(`services.${s.name}`, s.name)}</span>
               </div>
             ))}
           </div>
@@ -50,23 +49,23 @@ export default function Home() {
 
       <section className="section">
         <div className="container">
-          <h2 className="section-title">Explore</h2>
+          <h2 className="section-title">{t("home.exploreTitle")}</h2>
           <div className="services-grid">
             <Link to="/legacy" className="service-card">
               <span className="service-icon">🏛️</span>
-              <span className="service-name">Our Legacy</span>
+              <span className="service-name">{t("home.exploreLegacy")}</span>
             </Link>
             <Link to="/products" className="service-card">
               <span className="service-icon">🛍️</span>
-              <span className="service-name">Product Catalogue</span>
+              <span className="service-name">{t("home.exploreProducts")}</span>
             </Link>
             <Link to="/expo" className="service-card">
               <span className="service-icon">🎪</span>
-              <span className="service-name">Annamalaiyar Expo</span>
+              <span className="service-name">{t("home.exploreExpo")}</span>
             </Link>
             <Link to="/register" className="service-card">
               <span className="service-icon">📝</span>
-              <span className="service-name">Agent Registration</span>
+              <span className="service-name">{t("home.exploreRegister")}</span>
             </Link>
           </div>
         </div>

@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../api.js";
 
 export default function Contact() {
+  const { t } = useTranslation();
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -13,7 +15,7 @@ export default function Contact() {
   return (
     <section className="section">
       <div className="container">
-        <h2 className="section-title">Contact Us</h2>
+        <h2 className="section-title">{t("contact.title")}</h2>
         <p className="section-subtitle">{data.company}</p>
 
         <div className="legacy-banner">
@@ -23,7 +25,7 @@ export default function Contact() {
         <div className="legacy-meta">
           <div className="card">
             <div className="card-body">
-              <h4>Contact Person</h4>
+              <h4>{t("contact.contactPerson")}</h4>
               <p>
                 {data.contact_person}
                 <br />
@@ -33,7 +35,7 @@ export default function Contact() {
           </div>
           <div className="card">
             <div className="card-body">
-              <h4>Phone</h4>
+              <h4>{t("contact.phone")}</h4>
               <p>
                 {data.phones.map((phone) => (
                   <a key={phone} href={`tel:${phone.replace(/\s+/g, "")}`} style={{ display: "block", color: "#6b0f1a" }}>
@@ -45,7 +47,7 @@ export default function Contact() {
           </div>
           <div className="card">
             <div className="card-body">
-              <h4>Email</h4>
+              <h4>{t("contact.email")}</h4>
               <p>
                 <a href={`mailto:${data.email}`} style={{ color: "#6b0f1a", wordBreak: "break-word" }}>
                   {data.email}
@@ -55,7 +57,7 @@ export default function Contact() {
           </div>
           <div className="card">
             <div className="card-body">
-              <h4>Address</h4>
+              <h4>{t("contact.address")}</h4>
               <p>{data.address}</p>
             </div>
           </div>

@@ -1,16 +1,20 @@
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher.jsx";
 
 const links = [
-  { to: "/", label: "Home", end: true },
-  { to: "/register", label: "Register" },
-  { to: "/verify", label: "Verify Agent Code" },
-  { to: "/legacy", label: "Our Legacy" },
-  { to: "/products", label: "Product Catalogue" },
-  { to: "/expo", label: "Annamalaiyar Expo" },
-  { to: "/contact", label: "Contact" },
+  { to: "/", key: "nav.home", end: true },
+  { to: "/register", key: "nav.register" },
+  { to: "/verify", key: "nav.verify" },
+  { to: "/legacy", key: "nav.legacy" },
+  { to: "/products", key: "nav.products" },
+  { to: "/expo", key: "nav.expo" },
+  { to: "/contact", key: "nav.contact" },
 ];
 
 export default function Navbar() {
+  const { t } = useTranslation();
+
   return (
     <header className="navbar">
       <div className="navbar-inner">
@@ -19,17 +23,18 @@ export default function Navbar() {
             <img src="/assets/main-logo.png" alt="Sri Muruga Vilas Group - Annamalaiyar Trust" />
           </span>
           <span>
-            Annamalaiyar Trust
-            <span className="brand-sub">Chinna Salem &middot; Since 2012</span>
+            {t("nav.brandName")}
+            <span className="brand-sub">{t("nav.brandSub")}</span>
           </span>
         </div>
         <nav className="nav-links">
           {links.map((l) => (
             <NavLink key={l.to} to={l.to} end={l.end} className={({ isActive }) => (isActive ? "active" : "")}>
-              {l.label}
+              {t(l.key)}
             </NavLink>
           ))}
         </nav>
+        <LanguageSwitcher />
       </div>
     </header>
   );

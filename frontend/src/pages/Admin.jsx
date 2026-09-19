@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api, resolveImageUrl } from "../api.js";
 
 const initialProductForm = { name: "", category: "", weight: "", price: "", description: "" };
@@ -7,6 +8,7 @@ const initialAdForm = { title: "", link: "" };
 const SUBSCRIBERS_PER_PAGE = 50;
 
 export default function Admin() {
+  const { t } = useTranslation();
   const [adminKey, setAdminKey] = useState("");
   const [unlocked, setUnlocked] = useState(false);
   const [subscribers, setSubscribers] = useState([]);
@@ -86,8 +88,13 @@ export default function Admin() {
       const result = await api.adminVerify(verifyCode.trim().toUpperCase(), adminKey);
       setMessage(
         result.status === "verified"
-          ? `Verified ${result.name} (${result.agent_code}). Gift voucher ${result.voucher.code} for ₹${result.voucher.amount} issued.`
-          : `${result.agent_code} is already verified.`
+          ? t("admin.verifiedMessage", {
+              name: result.name,
+              code: result.agent_code,
+              voucherCode: result.voucher.code,
+              amount: result.voucher.amount,
+            })
+          : t("admin.alreadyVerifiedMessage", { code: result.agent_code })
       );
       setVerifyCode("");
       loadSubscribers(adminKey);
@@ -134,7 +141,7 @@ export default function Admin() {
     e.preventDefault();
     setAdError("");
     if (!adImage) {
-      setAdError("Please choose an image for the advertisement.");
+      setAdError(t("admin.adImageRequired"));
       return;
     }
     setAdSaving(true);
@@ -168,18 +175,16 @@ export default function Admin() {
     return (
       <div className="form-page">
         <div className="form-card">
-          <h2>Admin Login</h2>
-          <p style={{ color: "#7a6a52", marginTop: "-0.5rem" }}>
-            Trust office staff only. Enter the admin key to verify agent codes and manage the product catalogue.
-          </p>
+          <h2>{t("admin.loginTitle")}</h2>
+          <p style={{ color: "#7a6a52", marginTop: "-0.5rem" }}>{t("admin.loginSubtitle")}</p>
           {error && <div className="error-box">{error}</div>}
           <form onSubmit={login}>
             <div className="field">
-              <label htmlFor="key">Admin Key</label>
+              <label htmlFor="key">{t("admin.adminKey")}</label>
               <input id="key" type="password" required value={adminKey} onChange={(e) => setAdminKey(e.target.value)} />
             </div>
             <button className="btn btn-primary" type="submit" style={{ width: "100%" }}>
-              Unlock
+              {t("admin.unlock")}
             </button>
           </form>
         </div>
@@ -190,7 +195,7 @@ export default function Admin() {
   return (
     <section className="section">
       <div className="container">
-        <h2 className="section-title">Admin - Agent Verification</h2>
+        <h2 className="section-title">{t("admin.title")}</h2>
 
         <div className="form-card" style={{ maxWidth: 480, margin: "0 auto 2rem" }}>
           {error && <div className="error-box">{error}</div>}
@@ -201,18 +206,18 @@ export default function Admin() {
           )}
           <form onSubmit={verify}>
             <div className="field">
-              <label htmlFor="verifyCode">Agent Code to Verify</label>
+              <label htmlFor="verifyCode">{t("admin.verifyCodeLabel")}</label>
               <input
                 id="verifyCode"
                 required
                 value={verifyCode}
                 onChange={(e) => setVerifyCode(e.target.value)}
-                placeholder="e.g. AT2026-12345"
+                placeholder="e.g. AT2026-1234567"
                 style={{ textTransform: "uppercase" }}
               />
             </div>
             <button className="btn btn-secondary" type="submit" style={{ width: "100%" }}>
-              Verify &amp; Issue ₹250 Voucher
+              {t("admin.verifyButton")}
             </button>
           </form>
         </div>
@@ -223,11 +228,11 @@ export default function Admin() {
               <input
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Search by name, phone, or agent code"
+                placeholder={t("admin.searchPlaceholder")}
                 style={{ flex: 1, padding: "0.5rem 0.7rem", border: "1px solid #d8c493", borderRadius: "8px" }}
               />
               <button className="btn btn-secondary" type="submit">
-                Search
+                {t("admin.search")}
               </button>
               {search && (
                 <button
@@ -240,7 +245,7 @@ export default function Admin() {
                     loadSubscribers(adminKey, 1, "");
                   }}
                 >
-                  Clear
+                  {t("admin.clear")}
                 </button>
               )}
             </form>
@@ -249,12 +254,12 @@ export default function Admin() {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>Agent Code</th>
-                    <th>Name</th>
-                    <th>Phone</th>
-                    <th>Town</th>
-                    <th>Status</th>
-                    <th>Voucher</th>
+                    <th>{t("admin.tableAgentCode")}</th>
+                    <th>{t("admin.tableName")}</th>
+                    <th>{t("admin.tablePhone")}</th>
+                    <th>{t("admin.tableTown")}</th>
+                    <th>{t("admin.tableStatus")}</th>
+                    <th>{t("admin.tableVoucher")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -275,7 +280,7 @@ export default function Admin() {
                   {subscribers.length === 0 && (
                     <tr>
                       <td colSpan={6} style={{ textAlign: "center", color: "#7a6a52" }}>
-                        {search ? "No subscribers match your search." : "No subscribers yet."}
+                        {search ? t("admin.noMatch") : t("admin.noSubscribers")}
                       </td>
                     </tr>
                   )}
@@ -291,10 +296,10 @@ export default function Admin() {
                   disabled={subscriberPage <= 1}
                   onClick={() => goToPage(subscriberPage - 1)}
                 >
-                  Previous
+                  {t("admin.previous")}
                 </button>
                 <span style={{ fontSize: "0.85rem", color: "#7a6a52" }}>
-                  Page {subscriberPage} of {subscriberTotalPages} &middot; {subscriberTotal} subscribers
+                  {t("admin.pageInfo", { page: subscriberPage, totalPages: subscriberTotalPages, total: subscriberTotal })}
                 </span>
                 <button
                   className="btn btn-outline"
@@ -302,40 +307,56 @@ export default function Admin() {
                   disabled={subscriberPage >= subscriberTotalPages}
                   onClick={() => goToPage(subscriberPage + 1)}
                 >
-                  Next
+                  {t("admin.next")}
                 </button>
               </div>
             )}
           </div>
         </div>
 
-        <h2 className="section-title">Manage Product Catalogue</h2>
+        <h2 className="section-title">{t("admin.manageProducts")}</h2>
 
         <div className="form-card" style={{ maxWidth: 480, margin: "0 auto 2rem" }}>
           {productError && <div className="error-box">{productError}</div>}
           <form onSubmit={submitProduct}>
             <div className="field">
-              <label htmlFor="pname">Product Name *</label>
-              <input id="pname" required value={productForm.name} onChange={updateProductField("name")} placeholder="e.g. Ponni Boiled Rice" />
+              <label htmlFor="pname">{t("admin.productName")}</label>
+              <input
+                id="pname"
+                required
+                value={productForm.name}
+                onChange={updateProductField("name")}
+                placeholder={t("admin.productNamePlaceholder")}
+              />
             </div>
             <div className="field">
-              <label htmlFor="pcategory">Category</label>
-              <input id="pcategory" value={productForm.category} onChange={updateProductField("category")} placeholder="e.g. Grocery" />
+              <label htmlFor="pcategory">{t("admin.category")}</label>
+              <input
+                id="pcategory"
+                value={productForm.category}
+                onChange={updateProductField("category")}
+                placeholder={t("admin.categoryPlaceholder")}
+              />
             </div>
             <div className="field">
-              <label htmlFor="pweight">Weight / Variant</label>
-              <input id="pweight" value={productForm.weight} onChange={updateProductField("weight")} placeholder="e.g. 5 Kg" />
+              <label htmlFor="pweight">{t("admin.weight")}</label>
+              <input
+                id="pweight"
+                value={productForm.weight}
+                onChange={updateProductField("weight")}
+                placeholder={t("admin.weightPlaceholder")}
+              />
             </div>
             <div className="field">
-              <label htmlFor="pprice">Price (&#8377;) *</label>
+              <label htmlFor="pprice">{t("admin.price")}</label>
               <input id="pprice" type="number" min="1" required value={productForm.price} onChange={updateProductField("price")} />
             </div>
             <div className="field">
-              <label htmlFor="pdescription">Description</label>
+              <label htmlFor="pdescription">{t("admin.description")}</label>
               <textarea id="pdescription" rows={3} value={productForm.description} onChange={updateProductField("description")} />
             </div>
             <div className="field">
-              <label htmlFor="productImage">Product Image</label>
+              <label htmlFor="productImage">{t("admin.productImage")}</label>
               <input
                 id="productImage"
                 type="file"
@@ -344,7 +365,7 @@ export default function Admin() {
               />
             </div>
             <button className="btn btn-primary" type="submit" disabled={productSaving} style={{ width: "100%" }}>
-              {productSaving ? "Uploading..." : "Add Product"}
+              {productSaving ? t("admin.uploading") : t("admin.addProduct")}
             </button>
           </form>
         </div>
@@ -356,7 +377,7 @@ export default function Admin() {
                 {p.image_url ? (
                   <img src={resolveImageUrl(p.image_url)} alt={p.name} className="product-photo" />
                 ) : (
-                  <span className="product-photo-placeholder">No image</span>
+                  <span className="product-photo-placeholder">{t("products.noImage")}</span>
                 )}
               </div>
               <div className="card-body">
@@ -368,32 +389,43 @@ export default function Admin() {
                   style={{ marginTop: "0.7rem", width: "100%", color: "#6b0f1a", borderColor: "#6b0f1a" }}
                   onClick={() => deleteProduct(p.id)}
                 >
-                  Remove
+                  {t("admin.remove")}
                 </button>
               </div>
             </div>
           ))}
-          {products.length === 0 && <p style={{ color: "#7a6a52" }}>No products in the catalogue yet.</p>}
+          {products.length === 0 && <p style={{ color: "#7a6a52" }}>{t("admin.noProducts")}</p>}
         </div>
 
         <h2 className="section-title" style={{ marginTop: "2.5rem" }}>
-          Manage Advertisements
+          {t("admin.manageAds")}
         </h2>
-        <p className="section-subtitle">Shown as the home page carousel, in the order added</p>
+        <p className="section-subtitle">{t("admin.manageAdsSubtitle")}</p>
 
         <div className="form-card" style={{ maxWidth: 480, margin: "0 auto 2rem" }}>
           {adError && <div className="error-box">{adError}</div>}
           <form onSubmit={submitAd}>
             <div className="field">
-              <label htmlFor="adTitle">Advertisement Title *</label>
-              <input id="adTitle" required value={adForm.title} onChange={updateAdField("title")} placeholder="e.g. New Year Offer" />
+              <label htmlFor="adTitle">{t("admin.adTitle")}</label>
+              <input
+                id="adTitle"
+                required
+                value={adForm.title}
+                onChange={updateAdField("title")}
+                placeholder={t("admin.adTitlePlaceholder")}
+              />
             </div>
             <div className="field">
-              <label htmlFor="adLink">Link (where it goes when clicked)</label>
-              <input id="adLink" value={adForm.link} onChange={updateAdField("link")} placeholder="e.g. /products" />
+              <label htmlFor="adLink">{t("admin.adLink")}</label>
+              <input
+                id="adLink"
+                value={adForm.link}
+                onChange={updateAdField("link")}
+                placeholder={t("admin.adLinkPlaceholder")}
+              />
             </div>
             <div className="field">
-              <label htmlFor="adImage">Advertisement Image *</label>
+              <label htmlFor="adImage">{t("admin.adImage")}</label>
               <input
                 id="adImage"
                 type="file"
@@ -403,7 +435,7 @@ export default function Admin() {
               />
             </div>
             <button className="btn btn-primary" type="submit" disabled={adSaving} style={{ width: "100%" }}>
-              {adSaving ? "Uploading..." : "Add Advertisement"}
+              {adSaving ? t("admin.uploading") : t("admin.addAd")}
             </button>
           </form>
         </div>
@@ -422,12 +454,12 @@ export default function Admin() {
                   style={{ marginTop: "0.7rem", width: "100%", color: "#6b0f1a", borderColor: "#6b0f1a" }}
                   onClick={() => deleteAd(ad.id)}
                 >
-                  Remove
+                  {t("admin.remove")}
                 </button>
               </div>
             </div>
           ))}
-          {ads.length === 0 && <p style={{ color: "#7a6a52" }}>No advertisements yet.</p>}
+          {ads.length === 0 && <p style={{ color: "#7a6a52" }}>{t("admin.noAds")}</p>}
         </div>
       </div>
     </section>

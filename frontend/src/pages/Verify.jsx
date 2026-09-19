@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { api } from "../api.js";
 import { setAgentCode } from "../auth.js";
 
 export default function Verify() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [code, setCode] = useState(searchParams.get("code") || "");
   const [result, setResult] = useState(null);
@@ -29,26 +31,23 @@ export default function Verify() {
   return (
     <div className="form-page">
       <div className="form-card">
-        <h2>Verify Agent Code</h2>
-        <p style={{ color: "#7a6a52", marginTop: "-0.5rem" }}>
-          Enter your agent code to check verification status. Once the trust office verifies your code, your
-          &#8377;250 gift voucher will appear here automatically.
-        </p>
+        <h2>{t("verify.title")}</h2>
+        <p style={{ color: "#7a6a52", marginTop: "-0.5rem" }}>{t("verify.subtitle")}</p>
         {error && <div className="error-box">{error}</div>}
         <form onSubmit={check}>
           <div className="field">
-            <label htmlFor="code">Agent Code</label>
+            <label htmlFor="code">{t("verify.agentCode")}</label>
             <input
               id="code"
               required
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="e.g. AT2026-12345"
+              placeholder={t("verify.agentCodePlaceholder")}
               style={{ textTransform: "uppercase" }}
             />
           </div>
           <button className="btn btn-primary" type="submit" disabled={loading} style={{ width: "100%" }}>
-            {loading ? "Checking..." : "Check Status"}
+            {loading ? t("verify.checking") : t("verify.check")}
           </button>
         </form>
 
@@ -57,29 +56,26 @@ export default function Verify() {
             <div style={{ fontWeight: 700 }}>{result.name}</div>
             <div className="agent-code">{result.agent_code}</div>
             <span className={`status-pill ${result.status === "verified" ? "status-verified" : "status-pending"}`}>
-              {result.status === "verified" ? "VERIFIED" : "PENDING VERIFICATION"}
+              {result.status === "verified" ? t("verify.verified") : t("verify.pending")}
             </span>
 
             {result.status === "verified" && result.voucher && (
               <div className="voucher-card">
-                <div style={{ fontSize: "0.8rem", letterSpacing: "0.05em" }}>ANNAMALAIYAR TRUST GIFT VOUCHER</div>
+                <div style={{ fontSize: "0.8rem", letterSpacing: "0.05em" }}>{t("verify.voucherTitle")}</div>
                 <div className="voucher-amount">&#8377;{result.voucher.amount}</div>
                 <div className="voucher-code">{result.voucher.code}</div>
                 <div style={{ fontSize: "0.75rem", marginTop: "0.5rem", opacity: 0.85 }}>
-                  Issued {new Date(result.voucher.issued_at).toLocaleDateString()}
+                  {t("verify.issued")} {new Date(result.voucher.issued_at).toLocaleDateString()}
                 </div>
               </div>
             )}
 
             {result.status === "pending" && (
-              <p style={{ fontSize: "0.85rem", marginTop: "0.8rem" }}>
-                Your code has not been verified yet. Please visit or contact the Annamalaiyar Trust office at
-                Chinna Salem for verification.
-              </p>
+              <p style={{ fontSize: "0.85rem", marginTop: "0.8rem" }}>{t("verify.pendingNote")}</p>
             )}
 
             <Link to="/products" className="btn btn-primary" style={{ width: "100%", marginTop: "1rem" }}>
-              Browse Product Catalogue
+              {t("verify.browseProducts")}
             </Link>
           </div>
         )}

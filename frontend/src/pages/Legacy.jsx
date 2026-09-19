@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../api.js";
 
 export default function Legacy() {
+  const { t } = useTranslation();
   const [data, setData] = useState(null);
 
   useEffect(() => {
@@ -13,7 +15,7 @@ export default function Legacy() {
   return (
     <section className="section">
       <div className="container">
-        <h2 className="section-title">Our Legacy</h2>
+        <h2 className="section-title">{t("legacy.title")}</h2>
         <p className="section-subtitle">{data.trust_name}</p>
 
         <div className="legacy-banner">
@@ -26,25 +28,25 @@ export default function Legacy() {
         <div className="legacy-meta">
           <div className="card">
             <div className="card-body">
-              <h4>Founded</h4>
+              <h4>{t("legacy.founded")}</h4>
               <p>{data.founded}</p>
             </div>
           </div>
           <div className="card">
             <div className="card-body">
-              <h4>Location</h4>
+              <h4>{t("legacy.location")}</h4>
               <p>{data.location}</p>
             </div>
           </div>
           <div className="card">
             <div className="card-body">
-              <h4>Parent Group</h4>
+              <h4>{t("legacy.parentGroup")}</h4>
               <p>{data.parent_group}</p>
             </div>
           </div>
           <div className="card">
             <div className="card-body">
-              <h4>Milestone</h4>
+              <h4>{t("legacy.milestone")}</h4>
               <p>{data.milestone}</p>
             </div>
           </div>
@@ -52,7 +54,7 @@ export default function Legacy() {
 
         <div className="card" style={{ marginTop: "1.2rem" }}>
           <div className="card-body">
-            <h4>Affiliated Entities</h4>
+            <h4>{t("legacy.affiliates")}</h4>
             <ul>
               {data.affiliates.map((a) => (
                 <li key={a}>{a}</li>

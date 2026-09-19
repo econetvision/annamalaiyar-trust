@@ -102,6 +102,32 @@ a {
   color: #fff;
 }
 
+.lang-switch {
+  display: flex;
+  gap: 0.2rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  padding: 0.2rem;
+}
+
+.lang-switch button {
+  border: none;
+  background: transparent;
+  color: var(--gold-light);
+  font-size: 0.78rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.lang-switch button.active {
+  background: var(--gold);
+  color: var(--maroon-dark);
+  font-weight: 700;
+}
+
 /* Hero */
 .hero {
   background: radial-gradient(circle at top right, #7f1422, var(--maroon-dark));
