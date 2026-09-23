@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./LanguageSwitcher.jsx";
@@ -14,6 +15,9 @@ const links = [
 
 export default function Navbar() {
   const { t } = useTranslation();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = () => setMenuOpen(false);
 
   return (
     <header className="navbar">
@@ -27,14 +31,34 @@ export default function Navbar() {
             <span className="brand-sub">{t("nav.brandSub")}</span>
           </span>
         </div>
-        <nav className="nav-links">
+
+        <button
+          type="button"
+          className="navbar-toggle"
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+        >
+          {menuOpen ? "✕" : "☰"}
+        </button>
+
+        <nav className={`nav-links ${menuOpen ? "open" : ""}`}>
           {links.map((l) => (
-            <NavLink key={l.to} to={l.to} end={l.end} className={({ isActive }) => (isActive ? "active" : "")}>
+            <NavLink
+              key={l.to}
+              to={l.to}
+              end={l.end}
+              onClick={closeMenu}
+              className={({ isActive }) => (isActive ? "active" : "")}
+            >
               {t(l.key)}
             </NavLink>
           ))}
         </nav>
-        <LanguageSwitcher />
+
+        <div className={`navbar-lang ${menuOpen ? "open" : ""}`}>
+          <LanguageSwitcher />
+        </div>
       </div>
     </header>
   );
