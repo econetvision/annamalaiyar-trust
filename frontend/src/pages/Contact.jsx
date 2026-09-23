@@ -61,6 +61,14 @@ export default function Contact() {
               <p>{data.address}</p>
             </div>
           </div>
+          {data.gstin && (
+            <div className="card">
+              <div className="card-body">
+                <h4>{t("contact.gstin")}</h4>
+                <p>{data.gstin}</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

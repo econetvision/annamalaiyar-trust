@@ -124,7 +124,8 @@
     "contactPerson": "Contact Person",
     "phone": "Phone",
     "email": "Email",
-    "address": "Address"
+    "address": "Address",
+    "gstin": "GSTIN"
   },
   "admin": {
     "loginTitle": "Admin Login",

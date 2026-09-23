@@ -253,7 +253,7 @@ def register_routes(app):
                 "parent_group": "Sri Muruga Vilas Group of Company (Since 1923)",
                 "milestone": "100 Years of Trust - 2nd Century, Grand Celebration",
                 "affiliates": [
-                    "Annamalaiyar Thondu Nirmanam (Annamalaiyar Trust)",
+                    "Annamalaiyar Thondu Niruvanam",
                     "Annamalaiyar Direct Centre Private Limited",
                     "Annamalayaar Trade Centre Pvt. Ltd.",
                 ],
@@ -272,6 +272,7 @@ def register_routes(app):
                 "phones": ["97418 22408", "98948 72151"],
                 "email": "annamalatradecentrepvtltd25@gmail.com",
                 "address": "No. 11, Salem - Chennai NH Road, Chinna Salem, Kallakuruchi Dt - 606201, Tamil Nadu, India.",
+                "gstin": "33ABDCA4208K1ZX",
                 "card_image": "/assets/contact-card.jpg",
             }
         )
