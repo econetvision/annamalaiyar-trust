@@ -4,7 +4,28 @@ import { useTranslation } from "react-i18next";
 import { api } from "../api.js";
 import { setAgentCode } from "../auth.js";
 
-const initialForm = { name: "", phone: "", email: "", address: "", town: "" };
+const initialForm = {
+  name: "",
+  phone: "",
+  email: "",
+  address: "",
+  town: "",
+  registration_type: "agent",
+  vendor_type: "",
+  payment_method: "none",
+  account_holder_name: "",
+  bank_name: "",
+  ifsc_code: "",
+  account_number: "",
+  upi_id: "",
+};
+
+const VENDOR_TYPES = [
+  { value: "manufacturer", key: "register.vendorManufacturer" },
+  { value: "supplier_trader", key: "register.vendorSupplierTrader" },
+  { value: "retailer", key: "register.vendorRetailer" },
+  { value: "seller", key: "register.vendorSeller" },
+];
 
 export default function Register() {
   const { t } = useTranslation();
@@ -14,13 +35,28 @@ export default function Register() {
   const [subscriber, setSubscriber] = useState(null);
 
   const update = (field) => (e) => setForm({ ...form, [field]: e.target.value });
+  const setField = (field, value) => setForm({ ...form, [field]: value });
 
   const submit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
     try {
-      const result = await api.register(form);
+      const payload = {
+        name: form.name,
+        phone: form.phone,
+        email: form.email,
+        address: form.address,
+        town: form.town,
+        registration_type: form.registration_type,
+        vendor_type: form.registration_type === "vendor" ? form.vendor_type : "",
+        account_holder_name: form.payment_method === "bank" ? form.account_holder_name : "",
+        bank_name: form.payment_method === "bank" ? form.bank_name : "",
+        ifsc_code: form.payment_method === "bank" ? form.ifsc_code : "",
+        account_number: form.payment_method === "bank" ? form.account_number : "",
+        upi_id: form.payment_method === "upi" ? form.upi_id : "",
+      };
+      const result = await api.register(payload);
       setSubscriber(result);
       setAgentCode(result.agent_code);
     } catch (err) {
@@ -63,6 +99,43 @@ export default function Register() {
         <p style={{ color: "#7a6a52", marginTop: "-0.5rem" }}>{t("register.subtitle")}</p>
         {error && <div className="error-box">{error}</div>}
         <form onSubmit={submit}>
+          <div className="form-section-label">{t("register.chooseType")}</div>
+          <div className="type-grid">
+            {[
+              { value: "agent", key: "register.typeAgent" },
+              { value: "vendor", key: "register.typeVendor" },
+              { value: "consumer", key: "register.typeConsumer" },
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                className={`type-card ${form.registration_type === opt.value ? "selected" : ""}`}
+                onClick={() => setField("registration_type", opt.value)}
+              >
+                {t(opt.key)}
+              </button>
+            ))}
+          </div>
+
+          {form.registration_type === "vendor" && (
+            <>
+              <div className="form-section-label">{t("register.vendorTypeLabel")}</div>
+              <div className="pill-group">
+                {VENDOR_TYPES.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    className={`pill-option ${form.vendor_type === opt.value ? "selected" : ""}`}
+                    onClick={() => setField("vendor_type", opt.value)}
+                  >
+                    {t(opt.key)}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+
+          <div className="form-section-label">{t("register.yourDetails")}</div>
           <div className="field">
             <label htmlFor="name">{t("register.fullName")}</label>
             <input
@@ -102,6 +175,80 @@ export default function Register() {
             <label htmlFor="address">{t("register.address")}</label>
             <textarea id="address" rows={3} value={form.address} onChange={update("address")} />
           </div>
+
+          <div className="form-section-label">{t("register.paymentDetails")}</div>
+          <div style={{ fontSize: "0.82rem", color: "#7a6a52", marginTop: "-0.3rem", marginBottom: "0.5rem" }}>
+            {t("register.paymentMethodLabel")}
+          </div>
+          <div className="pill-group">
+            {[
+              { value: "none", key: "register.paymentNone" },
+              { value: "bank", key: "register.paymentBank" },
+              { value: "upi", key: "register.paymentUpi" },
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                className={`pill-option ${form.payment_method === opt.value ? "selected" : ""}`}
+                onClick={() => setField("payment_method", opt.value)}
+              >
+                {t(opt.key)}
+              </button>
+            ))}
+          </div>
+
+          {form.payment_method === "bank" && (
+            <>
+              <div className="field">
+                <label htmlFor="account_holder_name">{t("register.accountHolderName")}</label>
+                <input
+                  id="account_holder_name"
+                  required
+                  value={form.account_holder_name}
+                  onChange={update("account_holder_name")}
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="bank_name">{t("register.bankName")}</label>
+                <input id="bank_name" required value={form.bank_name} onChange={update("bank_name")} />
+              </div>
+              <div className="field">
+                <label htmlFor="ifsc_code">{t("register.ifscCode")}</label>
+                <input
+                  id="ifsc_code"
+                  required
+                  value={form.ifsc_code}
+                  onChange={(e) => setField("ifsc_code", e.target.value.toUpperCase())}
+                  style={{ textTransform: "uppercase" }}
+                  maxLength={11}
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="account_number">{t("register.accountNumber")}</label>
+                <input
+                  id="account_number"
+                  required
+                  inputMode="numeric"
+                  value={form.account_number}
+                  onChange={update("account_number")}
+                />
+              </div>
+            </>
+          )}
+
+          {form.payment_method === "upi" && (
+            <div className="field">
+              <label htmlFor="upi_id">{t("register.upiId")}</label>
+              <input
+                id="upi_id"
+                required
+                value={form.upi_id}
+                onChange={update("upi_id")}
+                placeholder={t("register.upiPlaceholder")}
+              />
+            </div>
+          )}
+
           <button className="btn btn-primary" type="submit" disabled={loading} style={{ width: "100%" }}>
             {loading ? t("register.submitting") : t("register.submit")}
           </button>

@@ -7,6 +7,27 @@ const initialAdForm = { title: "", link: "" };
 
 const SUBSCRIBERS_PER_PAGE = 50;
 
+const TYPE_KEYS = {
+  agent: "admin.typeAgent",
+  vendor: "admin.typeVendor",
+  consumer: "admin.typeConsumer",
+};
+
+const VENDOR_TYPE_KEYS = {
+  manufacturer: "register.vendorManufacturer",
+  supplier_trader: "register.vendorSupplierTrader",
+  retailer: "register.vendorRetailer",
+  seller: "register.vendorSeller",
+};
+
+function describeType(subscriber, t) {
+  const typeLabel = t(TYPE_KEYS[subscriber.registration_type] || subscriber.registration_type || "-");
+  if (subscriber.registration_type === "vendor" && subscriber.vendor_type) {
+    return `${typeLabel} · ${t(VENDOR_TYPE_KEYS[subscriber.vendor_type] || subscriber.vendor_type)}`;
+  }
+  return typeLabel;
+}
+
 export default function Admin() {
   const { t } = useTranslation();
   const [adminKey, setAdminKey] = useState("");
@@ -256,6 +277,7 @@ export default function Admin() {
                   <tr>
                     <th>{t("admin.tableAgentCode")}</th>
                     <th>{t("admin.tableName")}</th>
+                    <th>{t("admin.tableType")}</th>
                     <th>{t("admin.tablePhone")}</th>
                     <th>{t("admin.tableTown")}</th>
                     <th>{t("admin.tableStatus")}</th>
@@ -267,6 +289,7 @@ export default function Admin() {
                     <tr key={s.id}>
                       <td>{s.agent_code}</td>
                       <td>{s.name}</td>
+                      <td>{describeType(s, t)}</td>
                       <td>{s.phone}</td>
                       <td>{s.town || "-"}</td>
                       <td>
@@ -279,7 +302,7 @@ export default function Admin() {
                   ))}
                   {subscribers.length === 0 && (
                     <tr>
-                      <td colSpan={6} style={{ textAlign: "center", color: "#7a6a52" }}>
+                      <td colSpan={7} style={{ textAlign: "center", color: "#7a6a52" }}>
                         {search ? t("admin.noMatch") : t("admin.noSubscribers")}
                       </td>
                     </tr>

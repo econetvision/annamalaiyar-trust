@@ -13,6 +13,10 @@ load_dotenv()
 
 ADMIN_KEY = os.environ.get("ADMIN_KEY", "annamalaiyar2026")
 PHONE_RE = re.compile(r"^[6-9]\d{9}$")
+IFSC_RE = re.compile(r"^[A-Z]{4}0[A-Z0-9]{6}$")
+UPI_RE = re.compile(r"^[\w.\-]{2,256}@[a-zA-Z]{2,64}$")
+REGISTRATION_TYPES = {"agent", "vendor", "consumer"}
+VENDOR_TYPES = {"manufacturer", "supplier_trader", "retailer", "seller"}
 ALLOWED_IMAGE_EXTENSIONS = {"png", "jpg", "jpeg", "webp", "gif"}
 
 
@@ -37,10 +41,34 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        _migrate_schema()
         _seed_and_sync()
 
     register_routes(app)
     return app
+
+
+def _migrate_schema():
+    """Lightweight, dependency-free migration: add any columns the current
+    model defines but the (already-existing, pre-this-change) subscribers
+    table on disk doesn't have yet. Safe to run on every startup - a fresh
+    install's table already has every column via db.create_all(), so this
+    is a no-op there."""
+    inspector = db.inspect(db.engine)
+    existing_cols = {c["name"] for c in inspector.get_columns("subscribers")}
+    new_columns = {
+        "registration_type": "VARCHAR(20) DEFAULT 'agent'",
+        "vendor_type": "VARCHAR(30)",
+        "account_holder_name": "VARCHAR(120)",
+        "bank_name": "VARCHAR(120)",
+        "ifsc_code": "VARCHAR(20)",
+        "account_number": "VARCHAR(30)",
+        "upi_id": "VARCHAR(80)",
+    }
+    for column, ddl_type in new_columns.items():
+        if column not in existing_cols:
+            db.session.execute(db.text(f"ALTER TABLE subscribers ADD COLUMN {column} {ddl_type}"))
+    db.session.commit()
 
 
 def _seed_and_sync():
@@ -285,6 +313,14 @@ def register_routes(app):
         email = (data.get("email") or "").strip()
         address = (data.get("address") or "").strip()
         town = (data.get("town") or "").strip()
+        registration_type = (data.get("registration_type") or "agent").strip().lower()
+        vendor_type = (data.get("vendor_type") or "").strip().lower()
+
+        account_holder_name = (data.get("account_holder_name") or "").strip()
+        bank_name = (data.get("bank_name") or "").strip()
+        ifsc_code = (data.get("ifsc_code") or "").strip().upper()
+        account_number = (data.get("account_number") or "").strip()
+        upi_id = (data.get("upi_id") or "").strip()
 
         if not name or len(name) < 3:
             return jsonify({"error": "Please enter a valid full name."}), 400
@@ -292,6 +328,25 @@ def register_routes(app):
             return jsonify({"error": "Please enter a valid 10-digit Indian mobile number."}), 400
         if Subscriber.query.filter_by(phone=phone).first():
             return jsonify({"error": "This phone number is already registered."}), 409
+
+        if registration_type not in REGISTRATION_TYPES:
+            return jsonify({"error": "Please choose a valid registration type."}), 400
+        if registration_type == "vendor":
+            if vendor_type not in VENDOR_TYPES:
+                return jsonify({"error": "Please choose a valid vendor type."}), 400
+        else:
+            vendor_type = None
+
+        has_bank_details = any([account_holder_name, bank_name, ifsc_code, account_number])
+        if has_bank_details:
+            if not (account_holder_name and bank_name and ifsc_code and account_number):
+                return jsonify({"error": "Please fill in all bank account fields, or leave them all blank."}), 400
+            if not IFSC_RE.match(ifsc_code):
+                return jsonify({"error": "Please enter a valid IFSC code."}), 400
+            if not account_number.isdigit() or not (9 <= len(account_number) <= 18):
+                return jsonify({"error": "Please enter a valid account number."}), 400
+        if upi_id and not UPI_RE.match(upi_id):
+            return jsonify({"error": "Please enter a valid UPI ID (e.g. name@bank)."}), 400
 
         subscriber = Subscriber(
             name=name,
@@ -301,6 +356,13 @@ def register_routes(app):
             town=town or None,
             agent_code=Subscriber.generate_agent_code(),
             status="pending",
+            registration_type=registration_type,
+            vendor_type=vendor_type,
+            account_holder_name=account_holder_name or None,
+            bank_name=bank_name or None,
+            ifsc_code=ifsc_code or None,
+            account_number=account_number or None,
+            upi_id=upi_id or None,
         )
         db.session.add(subscriber)
         db.session.commit()

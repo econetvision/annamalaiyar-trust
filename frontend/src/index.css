@@ -441,6 +441,78 @@ a {
   border-color: var(--gold);
 }
 
+.form-section-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--maroon);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 1.3rem 0 0.6rem;
+}
+
+.form-section-label:first-child {
+  margin-top: 0;
+}
+
+.type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.type-card {
+  border: 1.5px solid #d8c493;
+  border-radius: 10px;
+  padding: 0.8rem 0.5rem;
+  text-align: center;
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.type-card:hover {
+  border-color: var(--gold);
+}
+
+.type-card.selected {
+  border-color: var(--maroon);
+  background: linear-gradient(135deg, var(--maroon), var(--maroon-dark));
+  color: #fff;
+}
+
+.pill-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.pill-option {
+  border: 1.5px solid #d8c493;
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8rem;
+  background: #fff;
+  cursor: pointer;
+  color: var(--ink);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.pill-option:hover {
+  border-color: var(--gold);
+}
+
+.pill-option.selected {
+  border-color: var(--gold);
+  background: var(--gold);
+  color: var(--maroon-dark);
+  font-weight: 700;
+}
+
 .error-box {
   background: #fdecea;
   border: 1px solid #e57373;

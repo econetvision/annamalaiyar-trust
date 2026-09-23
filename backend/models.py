@@ -25,6 +25,19 @@ class Subscriber(db.Model):
     created_at = db.Column(db.DateTime, default=utcnow)
     verified_at = db.Column(db.DateTime)
 
+    # registration_type: agent | vendor | consumer
+    registration_type = db.Column(db.String(20), nullable=False, default="agent")
+    # vendor_type (only set when registration_type == "vendor"):
+    # manufacturer | supplier_trader | retailer | seller
+    vendor_type = db.Column(db.String(30))
+
+    # Optional payout details - either a bank account, or a UPI id, or neither.
+    account_holder_name = db.Column(db.String(120))
+    bank_name = db.Column(db.String(120))
+    ifsc_code = db.Column(db.String(20))
+    account_number = db.Column(db.String(30))
+    upi_id = db.Column(db.String(80))
+
     voucher = db.relationship("Voucher", backref="subscriber", uselist=False)
 
     def to_dict(self):
@@ -40,6 +53,13 @@ class Subscriber(db.Model):
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "verified_at": self.verified_at.isoformat() if self.verified_at else None,
             "voucher": self.voucher.to_dict() if self.voucher else None,
+            "registration_type": self.registration_type,
+            "vendor_type": self.vendor_type,
+            "account_holder_name": self.account_holder_name,
+            "bank_name": self.bank_name,
+            "ifsc_code": self.ifsc_code,
+            "account_number": self.account_number,
+            "upi_id": self.upi_id,
         }
 
     @staticmethod
